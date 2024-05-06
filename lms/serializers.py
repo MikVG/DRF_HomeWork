@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from lms.models import Course, Lesson
+from lms.models import Course, Lesson, CourseSubscription
 from lms.validators import VideoLinkValidator
 from users.models import Payment
 
@@ -16,6 +16,7 @@ class LessonSerializer(serializers.ModelSerializer):
 class CourseSerializer(serializers.ModelSerializer):
     lesson_count = serializers.SerializerMethodField()
     lessons = LessonSerializer(source='lesson_set', many=True, read_only=True)
+    subscription = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Course
@@ -24,9 +25,21 @@ class CourseSerializer(serializers.ModelSerializer):
     def get_lesson_count(self, instance):
         return instance.lesson_set.count()
 
+    def get_subscription(self, instance):
+        if self.context['request'].user == instance.user:
+            return True
+        return False
+
 
 class PaymentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Payment
+        fields = '__all__'
+
+
+class CourseSubscribeSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = CourseSubscription
         fields = '__all__'

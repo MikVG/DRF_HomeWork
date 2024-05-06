@@ -1,10 +1,12 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, generics
 from rest_framework.filters import OrderingFilter
+from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
-from lms.models import Course, Lesson
-from lms.serializers import CourseSerializer, LessonSerializer, PaymentSerializer
+from lms.models import Course, Lesson, CourseSubscription
+from lms.serializers import CourseSerializer, LessonSerializer, PaymentSerializer, CourseSubscribeSerializer
 from users.models import Payment
 from users.permissions import IsModerator, IsOwner
 
@@ -67,3 +69,38 @@ class PaymentListAPIView(generics.ListAPIView):
     filter_backends = [DjangoFilterBackend, OrderingFilter]
     filterset_fields = ('paid_course', 'paid_lesson', 'payment_mode')
     ordering_fields = ('payment_date',)
+
+
+class SubscriptionCreateAPIView(generics.CreateAPIView):
+    serializer_class = CourseSubscribeSerializer
+    permission_classes = (IsAuthenticated, IsModerator | IsOwner,)
+
+    def perform_create(self, serializer):
+        subscribe = serializer.save()
+        subscribe.user = self.request.user
+        subscribe.save()
+
+    # def post(self, request, *args, **kwargs):
+    #     user = self.request.user
+    #     course_id = self.request.data.get('course_id')
+    #     course_item = get_object_or_404(Course, id=course_id)
+    #     subs_item = CourseSubscription.objects.filter(user=user, course=course_item)
+    #     if subs_item.exists():
+    #         subs_item.delete()
+    #         message = 'подписка удалена'
+    #     else:
+    #         CourseSubscription.objects.filter(user=user, course=course_item)
+    #         message = 'подписка добавлена'
+    #
+    #     return Response({"message": message})
+
+
+class SubscriptionListAPIView(generics.ListAPIView):
+    serializer_class = CourseSubscribeSerializer
+    queryset = CourseSubscription.objects.all()
+    permission_classes = (IsAuthenticated, IsModerator | IsOwner,)
+
+
+class SubscriptionDestroyAPIView(generics.DestroyAPIView):
+    queryset = CourseSubscription.objects.all()
+    permission_classes = (IsAuthenticated, IsModerator | IsOwner,)
