@@ -26,7 +26,7 @@ class CourseSerializer(serializers.ModelSerializer):
         return instance.lesson_set.count()
 
     def get_subscription(self, instance):
-        if self.context['request'].user == instance.user:
+        if self.context['request'].user == instance.owner:
             return True
         return False
 
