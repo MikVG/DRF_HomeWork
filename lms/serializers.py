@@ -2,7 +2,6 @@ from rest_framework import serializers
 
 from lms.models import Course, Lesson, CourseSubscription
 from lms.validators import VideoLinkValidator
-from users.models import Payment
 
 
 class LessonSerializer(serializers.ModelSerializer):
@@ -29,13 +28,6 @@ class CourseSerializer(serializers.ModelSerializer):
         if self.context['request'].user == instance.owner:
             return True
         return False
-
-
-class PaymentSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Payment
-        fields = '__all__'
 
 
 class CourseSubscribeSerializer(serializers.ModelSerializer):

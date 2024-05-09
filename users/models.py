@@ -40,6 +40,9 @@ class Payment(models.Model):
                                     blank=True)
     amount = models.PositiveIntegerField(verbose_name='сумма оплаты')
     payment_mode = models.CharField(max_length=25, verbose_name='способ оплаты', choices=mode, default='cash')
+    session_id = models.CharField(max_length=255, blank=True, null=True, verbose_name='id сессии')
+    link = models.URLField(max_length=400, blank=True, null=True, verbose_name='ссылка на оплату')
+
 
     def __str__(self):
         return f'{self.user}, {self.amount}'
