@@ -168,12 +168,12 @@ CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND")
 
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 
-# CELERY_BEAT_SCHEDULE = {
-#     'task-name': {
-#         'task': 'lms.tasks.send_update_course',  # Путь к задаче
-#         'schedule': timedelta(minutes=1),  # Расписание выполнения задачи (например, каждую 10 минут)
-#     },
-# }
+CELERY_BEAT_SCHEDULE = {
+    'task-name': {
+        'task': 'lms.tasks.check_last_login',  # Путь к задаче
+        'schedule': timedelta(hours=1),  # Расписание выполнения задачи (каждый час)
+    },
+}
 
 CELERY_TIMEZONE = TIME_ZONE
 CELERY_TASK_TRACK_STARTED = True
